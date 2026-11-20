@@ -1,0 +1,33 @@
+name: 작업
+description: 기능이 아닌 일. 설정, 구조 정리, 문서, 테스트 보강 등
+title: "[작업] "
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: 무엇을 왜 하나요
+    validations:
+      required: true
+  - type: checkboxes
+    id: area
+    attributes:
+      label: 영역
+      options:
+        - label: frontend
+        - label: backend
+        - label: infra
+        - label: docs
+  - type: textarea
+    id: tasks
+    attributes:
+      label: 할 일
+      value: |
+        - [ ] 
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: 끝나는 기준
+    validations:
+      required: true
