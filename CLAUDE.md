@@ -5,6 +5,20 @@
 - 지금 단계: **1단계 (글 읽기)**. 단계 목록은 루트 `README.md`에 있다.
 - 실행 방법과 명령은 루트와 각 폴더의 `README.md`에 있다. 여기에는 반복해 적지 않는다.
 
+## 기획 문서
+
+기획은 claude.ai 아티팩트에 있다. 저장소에는 복사본을 두지 않는다.
+
+- 기획 문서 (탭: 기능 명세, 화면 구성, 기술 스택, 개발 순서): https://claude.ai/artifact/FZxTJoqKFnrJ5gdvVEMxnW
+- 디자인 시스템: https://claude.ai/artifact/NDiXJdpEjhWF1VK8nhKu5b
+- 화면 시안 (홈, 글 목록, 글 상세): https://claude.ai/artifact/KDv2FujcmR88CWiXtEp3MA
+
+- 구현을 시작하기 전에 기획 문서에서 해당 부분을 읽는다. 기억이나 추측으로 채우지 않는다.
+- 기획이 바뀌면 기획 문서를 고친다. 기획 내용을 저장소의 파일에 따로 적지 않는다.
+- 단계의 할 일을 마치면 "개발 순서" 탭의 체크 목록에 표시한다.
+- 문서를 읽거나 고칠 수 없으면(로그인이 안 됐거나 Claude Docs 커넥터가 연결되지 않은 경우) 그 사실을 알리고 멈춘다.
+- 화면 시안은 참고용이다. 시안의 색 코드를 옮기지 말고 디자인 시스템의 이름을 쓴다.
+
 ## 구조
 
 - `frontend/`: Next.js 16 (App Router), TypeScript, Tailwind CSS
