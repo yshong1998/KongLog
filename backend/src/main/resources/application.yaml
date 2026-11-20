@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: konglog-backend
+  datasource:
+    # 기본값은 infra/local/compose.yaml의 로컬 DB다. 배포 환경에서는 환경 변수로 바꾼다.
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/konglog}
+    username: ${DB_USERNAME:konglog}
+    password: ${DB_PASSWORD:konglog}
+  jpa:
+    open-in-view: false
+    hibernate:
+      # 테이블은 Flyway가 만든다. JPA는 엔티티와 테이블이 맞는지 확인만 한다.
+      ddl-auto: validate
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

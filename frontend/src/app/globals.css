@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+/*
+ * KongLog 디자인 시스템의 값.
+ * 색은 여기 CSS 변수에서만 정하고, 아래 @theme에서 Tailwind 이름으로 연결한다.
+ * 다크 모드는 6단계에서 켠다. 값만 미리 넣어 두었고, <html data-theme="dark">일 때 적용된다.
+ */
+:root {
+  --bg: #fafcf5;
+  --surface: #ffffff;
+  --surface-sunken: #eff4e6;
+  --line: #dde5cf;
+  --line-strong: #7f8f6e;
+  --ink: #1f2a1c;
+  --ink-muted: #56624f;
+  --bean: #9bd353;
+  --on-bean: #1b2a10;
+  --bean-deep: #2f6b17;
+  --on-bean-deep: #f7fbf0;
+  --bean-soft: #e4f3cf;
+  --link: #2f6b17;
+  --soy: #f3e3a2;
+  --danger: #b3401a;
+  --code-bg: #20281d;
+  --code-ink: #e8eedf;
+}
+
+[data-theme="dark"] {
+  --bg: #141912;
+  --surface: #1c231a;
+  --surface-sunken: #252e21;
+  --line: #333f2d;
+  --line-strong: #74866a;
+  --ink: #e9efe1;
+  --ink-muted: #a5b19b;
+  --bean: #a6de66;
+  --on-bean: #162210;
+  --bean-deep: #3a7a20;
+  --on-bean-deep: #f7fbf0;
+  --bean-soft: #2d4020;
+  --link: #b3e57a;
+  --soy: #5a5020;
+  --danger: #ff9d7a;
+  --code-bg: #0e120c;
+  --code-ink: #e8eedf;
+}
+
+@theme inline {
+  /* 색: Tailwind 기본 색을 지우고 디자인 시스템의 색만 쓴다. 예: bg-surface, text-ink-muted */
+  --color-*: initial;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-bean: var(--bean);
+  --color-on-bean: var(--on-bean);
+  --color-bean-deep: var(--bean-deep);
+  --color-on-bean-deep: var(--on-bean-deep);
+  --color-bean-soft: var(--bean-soft);
+  --color-link: var(--link);
+  --color-soy: var(--soy);
+  --color-danger: var(--danger);
+  --color-code-bg: var(--code-bg);
+  --color-code-ink: var(--code-ink);
+
+  /* 글꼴: font-display는 블로그 이름에만 쓴다 */
+  --font-display: "Jua", "IBM Plex Sans KR", system-ui, sans-serif;
+  --font-sans:
+    "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui,
+    sans-serif;
+  --font-mono:
+    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* 글자 크기: text-h1, text-body처럼 쓰면 줄 높이와 굵기가 함께 적용된다 */
+  --text-*: initial;
+  --text-wordmark: 28px;
+  --text-wordmark--line-height: 32px;
+  --text-wordmark--font-weight: 400;
+  --text-h1: 32px;
+  --text-h1--line-height: 42px;
+  --text-h1--font-weight: 700;
+  --text-h2: 24px;
+  --text-h2--line-height: 34px;
+  --text-h2--font-weight: 700;
+  --text-h3: 19px;
+  --text-h3--line-height: 28px;
+  --text-h3--font-weight: 600;
+  --text-body: 17px;
+  --text-body--line-height: 30px;
+  --text-body--font-weight: 400;
+  --text-small: 14px;
+  --text-small--line-height: 22px;
+  --text-small--font-weight: 400;
+  --text-code: 14px;
+  --text-code--line-height: 24px;
+  --text-code--font-weight: 400;
+
+  /* 모서리: rounded-sm, rounded-md, rounded-pill */
+  --radius-*: initial;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+
+  /* 폭: max-w-content(본문), max-w-wide(목차나 태그 모음이 옆에 붙는 화면) */
+  --container-content: 720px;
+  --container-wide: 1080px;
+}
+
+/*
+ * 간격은 Tailwind 기본 눈금을 쓰되 여섯 단계만 쓴다.
+ * 1(4px), 2(8px), 4(16px), 6(24px), 10(40px), 16(64px). 예: p-6, gap-2, mt-16
+ */
+
+/* 키보드 포커스: 바탕색 2px 간격 뒤에 link 색 2px 실선 */
+:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}

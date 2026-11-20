@@ -1,0 +1,24 @@
+# 로컬 개발용 DB. 저장소 루트에서 실행한다.
+#   docker compose -f infra/local/compose.yaml up -d
+# 계정과 비밀번호는 로컬 전용이다. 배포 환경에서는 쓰지 않는다.
+name: konglog-local
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: konglog
+      POSTGRES_USER: konglog
+      POSTGRES_PASSWORD: konglog
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U konglog -d konglog"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  db-data:
