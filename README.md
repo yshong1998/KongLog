@@ -9,7 +9,8 @@
 | `frontend/` | 화면. Next.js 16, TypeScript, Tailwind CSS |
 | `backend/` | API 서버. Spring Boot 4.1, Java 25, PostgreSQL |
 | `infra/` | 실행 환경 설정. 지금은 로컬 개발용 DB만 있습니다 |
-| `.github/workflows/` | 코드를 올릴 때마다 도는 자동 검사 |
+| `docs/` | 작업하며 배운 점 기록. 나중에 블로그 글이 됩니다 |
+| `.github/` | 자동 검사, 이슈 템플릿, 풀 리퀘스트 템플릿 |
 
 ## 준비물
 
@@ -53,6 +54,10 @@ cd backend
 ```
 
 같은 검사가 GitHub Actions에서도 자동으로 돕니다.
+
+## 작업 방식
+
+이슈를 먼저 만들고, 브랜치에서 작업한 뒤 풀 리퀘스트로 올립니다. 브랜치 이름과 커밋 메시지 규칙은 [CONTRIBUTING.md](CONTRIBUTING.md)에 있습니다.
 
 ## 개발 단계
 
