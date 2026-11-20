@@ -35,7 +35,7 @@ http://localhost:8080/api/ping 에서 `{"status":"ok","service":"konglog-backend
 
 - `src/main/java/my/konglog`: 코드. 기능별로 폴더를 나눕니다 (예: `ping`)
 - `src/main/resources/application.yaml`: 설정
-- `src/main/resources/db/migration`: 테이블 변경 파일. `V2__...sql`처럼 번호를 올려 추가하고, 한번 적용된 파일은 고치지 않습니다
+- `src/main/resources/db/migration`: 테이블 변경 파일. `V1__create_post.sql`처럼 번호를 올려 추가하고, 한번 적용된 파일은 고치지 않습니다
 
 ## 설정값
 
