@@ -23,6 +23,19 @@ docker compose -f infra/local/compose.yaml up -d
 
 http://localhost:8080/api/ping 에서 `{"status":"ok","service":"konglog-backend"}`가 보이면 정상입니다.
 
+## 테스트용 글 넣기
+
+화면을 만들며 확인할 글을 로컬 DB에 넣습니다. 서버를 한 번 실행해 테이블이 만들어진 뒤에, 저장소 루트에서 실행합니다.
+
+```bash
+docker compose -f infra/local/compose.yaml exec -T db psql -U konglog -d konglog < infra/local/seed.sql
+```
+
+- 게시 글 24개와 초안 2개가 들어갑니다. 끝나면 상태별 글 수가 출력됩니다.
+- 여러 번 실행해도 결과가 같습니다. 슬러그가 같은 글만 덮어쓰고, 직접 써 넣은 글은 건드리지 않습니다.
+- 로컬 전용입니다. Flyway 파일이 아니라서 배포 환경의 DB에는 들어가지 않습니다.
+- 발행일이 같은 글, 태그가 없는 글처럼 일부러 넣어 둔 경우는 `infra/local/seed.sql` 맨 위에 적혀 있습니다.
+
 ## 명령
 
 | 명령 | 하는 일 |
