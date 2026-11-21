@@ -2,6 +2,11 @@
 
 export const SITE_NAME = "KongLog";
 
+/** 저작권 표기에 쓰는 연도. 블로그를 처음 만든 해. */
+export const COPYRIGHT_YEAR = 2026;
+
+export const GITHUB_URL = "https://github.com/yshong1998";
+
 export type MenuItem = {
   label: string;
   href: string;
