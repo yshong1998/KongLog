@@ -15,7 +15,7 @@ async function fetchMorePosts(
     if (!response.ok) {
       return undefined;
     }
-    // 이 주소(posts.json)는 모양을 확인한 응답만 돌려준다. 여기서 다시 확인하지 않는다.
+    // 이 주소(/internal/posts)는 모양을 확인한 응답만 돌려준다. 여기서 다시 확인하지 않는다.
     return (await response.json()) as PostList;
   } catch {
     return undefined;
