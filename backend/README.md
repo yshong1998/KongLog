@@ -46,6 +46,43 @@ docker compose -f infra/local/compose.yaml exec -T db psql -U konglog -d konglog
 
 테스트는 로컬 DB 안의 `konglog_test` 스키마(테이블을 담는 별도 공간)만 씁니다. 개발하며 넣어 둔 글과 섞이지 않고, 테스트가 끝나면 넣은 데이터를 되돌립니다. 설정은 `src/test/resources/application-test.yaml`에 있습니다.
 
+## API
+
+주소는 모두 `/api`로 시작합니다. 독자에게는 상태가 "게시"인 글만 내려줍니다.
+
+### `GET /api/posts` 글 목록
+
+게시 글을 발행일 최신순으로 내려줍니다.
+
+| 값 | 설명 |
+| --- | --- |
+| `size` | 받을 개수. 1부터 20까지, 기본 20 |
+| `tag` | 태그 이름. 이 태그가 붙은 글만 내려줍니다. 없거나 비어 있으면 거르지 않습니다 |
+| `cursor` | 앞선 응답의 `nextCursor`. 그다음 글부터 내려줍니다. 없으면 처음부터입니다 |
+
+```json
+{
+  "posts": [
+    {
+      "title": "Docker 컨테이너에서 localhost가 안 잡혔던 이유",
+      "slug": "docker-localhost",
+      "summary": "컨테이너 안에서 localhost는 컨테이너 자신이었어요.",
+      "tags": ["Docker", "네트워크"],
+      "publishedAt": "2026-11-18T00:00:00Z"
+    }
+  ],
+  "totalCount": 23,
+  "nextCursor": "MjAyNi0xMS0wNFQwMDowMDowMFosMw"
+}
+```
+
+- `tags`는 태그 이름이고 이름순입니다. 태그가 없는 글은 빈 배열입니다. 이 이름을 그대로 `tag`에 넣어 거릅니다.
+- `publishedAt`은 시간대가 들어간 ISO 8601 형식이고 항상 UTC(`Z`)입니다.
+- `totalCount`는 조건(`tag`)에 맞는 게시 글의 전체 수입니다. 이번에 내려준 개수가 아닙니다.
+- `nextCursor`는 더 받을 글이 없으면 `null`입니다. 뜻을 풀지 말고 받은 그대로 `cursor`에 넣습니다. 이어 받을 때는 `tag`와 `size`를 처음과 같게 넣습니다.
+- 조건에 맞는 글이 없으면 오류가 아니라 빈 목록(`posts: []`, `totalCount: 0`, `nextCursor: null`)입니다. 없는 태그로 걸러도 같습니다.
+- `size`가 범위를 벗어나거나 `cursor`가 이 API가 준 값이 아니면 400입니다.
+
 ## 구조
 
 - `src/main/java/my/konglog`: 코드. 기능별로 폴더를 나눕니다 (`post`, `tag`, `ping`)
