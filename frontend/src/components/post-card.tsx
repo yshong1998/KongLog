@@ -7,18 +7,25 @@ import { postPath, tagPath } from "@/lib/routes";
  * 글 하나를 보여 주는 카드. 대표 이미지는 두지 않는다.
  * 카드 어디를 눌러도 글 상세로 가도록 제목 링크의 누르는 영역을 카드 전체로 넓혔다.
  * 태그 링크는 그 위에 놓여서 따로 눌린다.
+ * 제목 단계는 화면마다 다르다. 카드 위에 소제목(h2)이 있는 홈은 h3, 없는 글 목록은 h2다.
  */
-export function PostCard({ post }: { post: PostSummary }) {
+export function PostCard({
+  post,
+  titleAs: Title = "h3",
+}: {
+  post: PostSummary;
+  titleAs?: "h2" | "h3";
+}) {
   return (
     <article className="relative flex flex-col gap-2 rounded-md border border-line bg-surface p-6">
-      <h3 className="text-h2">
+      <Title className="text-h2">
         <Link
           href={postPath(post.slug)}
           className="after:absolute after:inset-0 after:rounded-md hover:underline"
         >
           {post.title}
         </Link>
-      </h3>
+      </Title>
       <p className="line-clamp-2">{post.summary}</p>
       <div className="flex flex-wrap items-center gap-x-2 text-small">
         {post.tags.length > 0 && (
