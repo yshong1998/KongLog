@@ -3,3 +3,6 @@ Thumbs.db
 .idea/
 .vscode/
 *.log
+
+# 세션끼리 주고받는 요청 문서. 원래 폴더에만 두고 커밋하지 않는다
+cowork/
