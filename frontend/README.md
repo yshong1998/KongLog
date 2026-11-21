@@ -20,7 +20,6 @@ http://localhost:3000 에서 확인합니다. 백엔드(8080 포트)가 떠 있�
 | `npm run build` | 배포용 빌드 |
 | `npm run lint` | 코드 검사 |
 | `npm run typecheck` | 타입 검사 |
-| `npm test` | 테스트 |
 
 ## 디자인 시스템
 

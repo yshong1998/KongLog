@@ -30,7 +30,8 @@
 - 서버 컴포넌트가 기본이다. `'use client'`는 상태나 이벤트가 필요한 컴포넌트에만 붙인다.
 - 백엔드 호출은 `src/lib/api.ts`를 거친다.
 - 타입 검사는 반드시 `npm run typecheck`로 한다. `tsc`만 돌리면 Next.js가 만드는 타입이 없어 실패한다.
-- 올리기 전에 `npm run lint && npm run typecheck && npm test && npm run build`를 돌린다.
+- 올리기 전에 `npm run lint && npm run typecheck && npm run build`를 돌린다.
+- 프론트엔드에는 테스트 코드를 두지 않는다. 테스트 파일, 테스트 도구(vitest 등), `npm test` 명령을 추가하지 않는다.
 
 ## 디자인 시스템
 
