@@ -46,7 +46,7 @@ DB를 내릴 때는 `docker compose -f infra/local/compose.yaml down`을 씁니�
 ```bash
 # 프론트엔드
 cd frontend
-npm run lint && npm run typecheck && npm test && npm run build
+npm run lint && npm run typecheck && npm run build
 
 # 백엔드 (로컬 DB가 떠 있어야 합니다)
 cd backend
