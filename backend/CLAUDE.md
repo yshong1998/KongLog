@@ -30,5 +30,6 @@
 - 엔티티를 API 응답으로 그대로 내보내지 않는다. 응답용 `record`를 따로 둔다.
 - Lombok은 `@Getter`, `@NoArgsConstructor(access = AccessLevel.PROTECTED)`, `@RequiredArgsConstructor`만 쓴다. 엔티티에 `@Setter`, `@Data`, `@Builder`, `@AllArgsConstructor`, `@EqualsAndHashCode`, `@ToString`을 붙이지 않는다. 엔티티는 정해 둔 메서드(`draft()`, `publish()` 등)로만 만들고 바꾼다.
 - 새 API에는 테스트를 함께 쓴다. 테스트 이름은 한국어로 쓴다.
+- 올리기 전에 `./gradlew test`를 돌린다. 로컬 DB가 떠 있어야 한다.
 - 비밀값은 커밋하지 않는다. 환경 변수로 받는다.
 - **Spring Boot 4는 3과 의존성 이름이 다르다** (`spring-boot-starter-webmvc`, `spring-boot-starter-flyway`, 기술별 `-test` 스타터 등). 추가하기 전에 4.1 공식 문서에서 이름을 확인한다.
