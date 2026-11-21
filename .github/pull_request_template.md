@@ -8,7 +8,7 @@ Closes #
 
 ## 어떻게 확인했나
 
-- [ ] 프론트엔드: `npm run lint && npm run typecheck && npm test && npm run build`
+- [ ] 프론트엔드: `npm run lint && npm run typecheck && npm run build`
 - [ ] 백엔드: `./gradlew test`
 - [ ] 직접 실행해서 확인
 - [ ] 화면이 바뀌었으면 스크린샷 첨부
