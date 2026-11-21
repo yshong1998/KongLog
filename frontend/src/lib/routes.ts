@@ -12,3 +12,15 @@ export const POSTS_PATH = "/posts";
 export function tagPath(tag: string): string {
   return `${POSTS_PATH}?tag=${encodeURIComponent(tag)}`;
 }
+
+/**
+ * 글 목록의 다음 묶음을 JSON으로 받는 주소. 글 목록 화면의 "더 보기"가 브라우저에서 부른다.
+ * 배포 환경에서 /api로 시작하는 주소는 백엔드로 가기 때문에 /api 아래에 두지 않았다.
+ */
+export function morePostsPath(cursor: string, tag?: string): string {
+  const params = new URLSearchParams({ cursor });
+  if (tag !== undefined) {
+    params.set("tag", tag);
+  }
+  return `/posts.json?${params}`;
+}
