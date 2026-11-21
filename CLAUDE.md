@@ -81,17 +81,6 @@ Claude 세션을 역할별로 따로 실행해 협업한다. 어느 폴더에서
 - 한 번도 실행해 보지 못한 것은 "확인하지 못했다"고 분명히 말한다.
 - 설명은 쉬운 말로 한다. 처음 나오는 용어는 한 줄로 풀어 준다.
 
-## 백엔드
-
-- 패키지는 `my.konglog` 아래 기능별로 나눈다 (`post`, `tag`, `member` 등).
-- API 주소는 모두 `/api`로 시작한다.
-- 테이블은 Flyway 파일로만 바꾼다. `src/main/resources/db/migration`에 번호를 올려 새 파일을 추가하고, 이미 적용된 파일은 고치지 않는다.
-- 엔티티를 API 응답으로 그대로 내보내지 않는다. 응답용 `record`를 따로 둔다.
-- Lombok은 `@Getter`, `@NoArgsConstructor(access = AccessLevel.PROTECTED)`, `@RequiredArgsConstructor`만 쓴다. 엔티티에 `@Setter`, `@Data`, `@Builder`, `@AllArgsConstructor`, `@EqualsAndHashCode`, `@ToString`을 붙이지 않는다. 엔티티는 정해 둔 메서드(`draft()`, `publish()` 등)로만 만들고 바꾼다.
-- 새 API에는 테스트를 함께 쓴다. 테스트 이름은 한국어로 쓴다.
-- 비밀값은 커밋하지 않는다. 환경 변수로 받는다.
-- **Spring Boot 4는 3과 의존성 이름이 다르다** (`spring-boot-starter-webmvc`, `spring-boot-starter-flyway`, 기술별 `-test` 스타터 등). 추가하기 전에 4.1 공식 문서에서 이름을 확인한다.
-
 ## 기획에서 정한, 바꾸면 안 되는 것
 
 해당 기능을 만들 때 반드시 지킨다. 바꿔야 할 이유가 생기면 구현 전에 물어본다.

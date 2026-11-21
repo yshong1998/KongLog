@@ -19,3 +19,16 @@
 - 프론트에 요청할 것이 생기면 작업을 멈추고 `cowork/issue_<이슈번호>/back_req_<순번>.md`를 만든다. 필요한 것, 필요한 이유, 바라는 모양을 적는다.
 - `front_req_*.md`의 요청을 끝내면 그 문서 맨 위에 구현이 완료됐다는 것과 실제 API 모양을 적는다.
 - 요청한 것이 지금 맡은 이슈의 범위 밖이면 구현하지 않고, 어느 이슈에서 다룰지만 사용자에게 알린다.
+
+## 코드 규칙
+
+아래 경로는 이 폴더(`backend/`) 기준이다.
+
+- 패키지는 `my.konglog` 아래 기능별로 나눈다 (`post`, `tag`, `member` 등).
+- API 주소는 모두 `/api`로 시작한다.
+- 테이블은 Flyway 파일로만 바꾼다. `src/main/resources/db/migration`에 번호를 올려 새 파일을 추가하고, 이미 적용된 파일은 고치지 않는다.
+- 엔티티를 API 응답으로 그대로 내보내지 않는다. 응답용 `record`를 따로 둔다.
+- Lombok은 `@Getter`, `@NoArgsConstructor(access = AccessLevel.PROTECTED)`, `@RequiredArgsConstructor`만 쓴다. 엔티티에 `@Setter`, `@Data`, `@Builder`, `@AllArgsConstructor`, `@EqualsAndHashCode`, `@ToString`을 붙이지 않는다. 엔티티는 정해 둔 메서드(`draft()`, `publish()` 등)로만 만들고 바꾼다.
+- 새 API에는 테스트를 함께 쓴다. 테스트 이름은 한국어로 쓴다.
+- 비밀값은 커밋하지 않는다. 환경 변수로 받는다.
+- **Spring Boot 4는 3과 의존성 이름이 다르다** (`spring-boot-starter-webmvc`, `spring-boot-starter-flyway`, 기술별 `-test` 스타터 등). 추가하기 전에 4.1 공식 문서에서 이름을 확인한다.
