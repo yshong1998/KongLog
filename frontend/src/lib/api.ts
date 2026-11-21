@@ -92,12 +92,29 @@ function isTag(value: unknown): value is Tag {
 
 /**
  * 게시 글 목록을 발행일 최신순으로 받는다.
- * size는 받을 개수(1부터 20까지)이고, 넣지 않으면 백엔드 기본값인 20개다.
+ * - size: 받을 개수(1부터 20까지). 넣지 않으면 백엔드 기본값인 20개다.
+ * - tag: 이 태그가 붙은 글만 받는다. 태그 이름 그대로 넣는다.
+ * - cursor: 앞선 응답의 nextCursor. 그다음 글부터 받는다. 이어 받을 때는 tag와 size를 처음과 같게 넣는다.
  */
 export async function getPosts({
   size,
-}: { size?: number } = {}): Promise<ApiResult<PostList>> {
-  const query = size === undefined ? "" : `?size=${size}`;
+  tag,
+  cursor,
+}: { size?: number; tag?: string; cursor?: string } = {}): Promise<
+  ApiResult<PostList>
+> {
+  // 태그 이름에 한글이나 띄어쓰기가 있을 수 있다. URLSearchParams가 인코딩해 준다.
+  const params = new URLSearchParams();
+  if (size !== undefined) {
+    params.set("size", String(size));
+  }
+  if (tag !== undefined) {
+    params.set("tag", tag);
+  }
+  if (cursor !== undefined) {
+    params.set("cursor", cursor);
+  }
+  const query = params.size > 0 ? `?${params}` : "";
   const body = await getJson(`/api/posts${query}`);
   return isPostList(body) ? { ok: true, data: body } : { ok: false };
 }
