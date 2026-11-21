@@ -70,6 +70,43 @@ http://localhost:8080/api/ping 에서 `{"status":"ok","service":"konglog-backend
 - 조건에 맞는 글이 없으면 오류가 아니라 빈 목록(`posts: []`, `totalCount: 0`)입니다. 없는 태그로 걸러도 같습니다.
 - `size`가 범위를 벗어나거나 `cursor`가 이 API가 준 값이 아니면 400입니다.
 
+### `GET /api/posts/{슬러그}` 글 상세
+
+게시 글 하나를 내려줍니다.
+
+```json
+{
+  "title": "Docker 컨테이너에서 localhost가 안 잡혔던 이유",
+  "slug": "docker-localhost",
+  "summary": "컨테이너 안에서 localhost는 컨테이너 자신이었어요.",
+  "content": "## 문제\n\n컨테이너 안에서 `localhost`가 안 잡혔어요.",
+  "tags": ["Docker", "네트워크"],
+  "publishedAt": "2026-11-18T00:00:00Z",
+  "editedAt": null
+}
+```
+
+- `content`는 마크다운 원문 그대로입니다.
+- `editedAt`은 수정일입니다. 게시한 뒤 본문을 고친 적이 없으면 `null`이고, 있으면 `publishedAt`과 같은 형식입니다.
+- 없는 글이거나 초안이면 404입니다. 초안이 있다는 사실이 드러나지 않도록 두 경우의 응답이 같습니다.
+
+### `GET /api/tags` 태그 목록
+
+게시 글이 있는 태그만, 글이 많은 순으로 내려줍니다. 글 수가 같으면 이름순입니다.
+
+```json
+{
+  "tags": [
+    { "name": "Spring", "postCount": 6 },
+    { "name": "React", "postCount": 5 }
+  ]
+}
+```
+
+- `name`을 그대로 글 목록의 `tag`에 넣어 거릅니다. 태그를 가리키는 값은 이름 하나뿐입니다.
+- `postCount`에는 게시 글만 셉니다.
+- 게시 글이 하나도 없으면 빈 목록(`tags: []`)입니다.
+
 ## 구조
 
 - `src/main/java/my/konglog`: 코드. 기능별로 폴더를 나눕니다 (`post`, `tag`, `ping`)
