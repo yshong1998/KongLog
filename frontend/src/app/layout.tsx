@@ -7,14 +7,14 @@ import "@fontsource/jetbrains-mono/400.css";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { SITE_NAME } from "@/lib/site";
+import { SITE_NAME, SITE_TAGLINE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: {
     default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
   },
-  description: "개발하다 만난 문제를 콩알만큼씩 적어 둬요.",
+  description: SITE_TAGLINE,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
