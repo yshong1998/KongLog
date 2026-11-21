@@ -33,4 +33,6 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    // 테스트는 전용 스키마를 쓴다. 설정은 src/test/resources/application-test.yaml에 있다.
+    systemProperty 'spring.profiles.active', 'test'
 }

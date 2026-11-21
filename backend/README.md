@@ -31,11 +31,13 @@ http://localhost:8080/api/ping 에서 `{"status":"ok","service":"konglog-backend
 | `./gradlew test` | 테스트. 로컬 DB가 떠 있어야 합니다 |
 | `./gradlew build` | 테스트 후 실행 파일 만들기 |
 
+테스트는 로컬 DB 안의 `konglog_test` 스키마(테이블을 담는 별도 공간)만 씁니다. 개발하며 넣어 둔 글과 섞이지 않고, 테스트가 끝나면 넣은 데이터를 되돌립니다. 설정은 `src/test/resources/application-test.yaml`에 있습니다.
+
 ## 구조
 
-- `src/main/java/my/konglog`: 코드. 기능별로 폴더를 나눕니다 (예: `ping`)
+- `src/main/java/my/konglog`: 코드. 기능별로 폴더를 나눕니다 (`post`, `tag`, `ping`)
 - `src/main/resources/application.yaml`: 설정
-- `src/main/resources/db/migration`: 테이블 변경 파일. `V1__create_post.sql`처럼 번호를 올려 추가하고, 한번 적용된 파일은 고치지 않습니다
+- `src/main/resources/db/migration`: 테이블 변경 파일. `V2__add_member.sql`처럼 번호를 올려 추가하고, 한번 적용된 파일은 고치지 않습니다
 
 ## 설정값
 
