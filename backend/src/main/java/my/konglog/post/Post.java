@@ -16,11 +16,16 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import my.konglog.tag.Tag;
 
 /** 블로그 글. 본문은 마크다운 원문으로 저장한다. */
 @Entity
 @Table(name = "post")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA가 쓰는 기본 생성자
 public class Post {
 
     @Id
@@ -57,10 +62,6 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new LinkedHashSet<>();
 
-    protected Post() {
-        // JPA가 쓰는 기본 생성자
-    }
-
     private Post(String title, String slug, String summary, String content) {
         this.title = title;
         this.slug = slug;
@@ -96,46 +97,7 @@ public class Post {
         updatedAt = Instant.now();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getSlug() {
-        return slug;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public PostStatus getStatus() {
-        return status;
-    }
-
-    public Instant getPublishedAt() {
-        return publishedAt;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public Instant getEditedAt() {
-        return editedAt;
-    }
-
+    /** 밖에서 고칠 수 없는 Set을 돌려준다. 태그는 addTag로만 붙인다. 그래서 Lombok에 맡기지 않고 직접 쓴다. */
     public Set<Tag> getTags() {
         return Collections.unmodifiableSet(tags);
     }

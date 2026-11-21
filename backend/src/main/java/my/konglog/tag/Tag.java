@@ -5,10 +5,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /** 글에 붙이는 태그. 이름은 중복될 수 없다. */
 @Entity
 @Table(name = "tag")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA가 쓰는 기본 생성자
 public class Tag {
 
     @Id
@@ -17,19 +22,7 @@ public class Tag {
 
     private String name;
 
-    protected Tag() {
-        // JPA가 쓰는 기본 생성자
-    }
-
     public Tag(String name) {
         this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
     }
 }
