@@ -27,6 +27,12 @@ dependencies {
     implementation 'org.flywaydb:flyway-database-postgresql'
     runtimeOnly 'org.postgresql:postgresql'
 
+    // Lombok은 컴파일할 때만 쓴다. 쓰는 범위는 CLAUDE.md의 "코드 규칙"에 있다.
+    compileOnly 'org.projectlombok:lombok'
+    // annotationProcessor는 implementation의 버전 목록을 물려받지 않아 따로 걸어 준다.
+    annotationProcessor platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+    annotationProcessor 'org.projectlombok:lombok'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
