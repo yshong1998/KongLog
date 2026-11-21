@@ -1,6 +1,7 @@
 package my.konglog.post;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,5 +34,10 @@ public class PostQueryService {
         String nextCursor = hasNext ? PostCursor.of(posts.getLast()).encode() : null;
         long totalCount = postQueryRepository.countPublished(tagName);
         return new PostListResponse(posts.stream().map(PostSummaryResponse::from).toList(), totalCount, nextCursor);
+    }
+
+    /** 슬러그로 게시 글 하나를 읽는다. 없는 글이거나 초안이면 비어 있다. */
+    public Optional<PostDetailResponse> getPublishedPost(String slug) {
+        return postQueryRepository.findPublishedBySlug(slug).map(PostDetailResponse::from);
     }
 }

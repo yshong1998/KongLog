@@ -3,6 +3,7 @@ package my.konglog.post;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -65,6 +66,18 @@ public class PostQueryRepository {
             query.setParameter("tagName", tagName);
         }
         return query.getSingleResult();
+    }
+
+    /** 슬러그로 게시 글 하나를 태그와 함께 읽는다. 없는 글이거나 초안이면 비어 있다. */
+    public Optional<Post> findPublishedBySlug(String slug) {
+        return entityManager
+                .createQuery(
+                        "select p from Post p left join fetch p.tags where p.slug = :slug and p.status = :status",
+                        Post.class)
+                .setParameter("slug", slug)
+                .setParameter("status", PostStatus.PUBLISHED)
+                .getResultStream()
+                .findFirst();
     }
 
     /**
