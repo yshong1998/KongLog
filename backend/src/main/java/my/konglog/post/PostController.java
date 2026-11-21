@@ -3,6 +3,7 @@ package my.konglog.post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +37,18 @@ public class PostController {
         }
         String tagName = (tag == null || tag.isBlank()) ? null : tag;
         return postQueryService.getPublishedPosts(tagName, decodeCursor(cursor), size);
+    }
+
+    /**
+     * 글 상세. 게시 글 하나를 본문과 함께 내려준다.
+     *
+     * <p>없는 글과 초안은 똑같이 404다. 초안이 있다는 사실이 밖에서 보이면 안 된다.
+     */
+    @GetMapping("/{slug}")
+    public PostDetailResponse detail(@PathVariable String slug) {
+        return postQueryService
+                .findPublishedPost(slug)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "글을 찾을 수 없다"));
     }
 
     private PostCursor decodeCursor(String cursor) {

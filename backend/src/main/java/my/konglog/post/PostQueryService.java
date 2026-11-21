@@ -2,6 +2,7 @@ package my.konglog.post;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
@@ -39,5 +40,14 @@ public class PostQueryService {
         String nextCursor = hasNext ? PostCursor.of(posts.getLast()).encode() : null;
         long totalCount = postRepository.countPublished(tagName);
         return new PostListResponse(posts.stream().map(PostSummaryResponse::from).toList(), totalCount, nextCursor);
+    }
+
+    /**
+     * 게시 글 하나를 슬러그로 읽는다.
+     *
+     * @return 없는 글이거나 초안이면 비어 있다
+     */
+    public Optional<PostDetailResponse> findPublishedPost(String slug) {
+        return postRepository.findPublishedBySlug(slug).map(PostDetailResponse::from);
     }
 }

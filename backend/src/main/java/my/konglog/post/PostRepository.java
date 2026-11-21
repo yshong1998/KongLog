@@ -2,6 +2,7 @@ package my.konglog.post;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -55,4 +56,16 @@ public interface PostRepository extends JpaRepository<Post, Long> {
      */
     @Query("select p from Post p left join fetch p.tags where p in :posts")
     List<Post> findWithTags(List<Post> posts);
+
+    /**
+     * 슬러그로 게시 글 하나를 태그와 함께 읽는다.
+     *
+     * <p>없는 글이거나 초안이면 비어 있다. 부르는 쪽에서는 둘을 구분할 수 없다.
+     */
+    @Query("""
+            select p from Post p left join fetch p.tags
+            where p.slug = :slug
+              and p.status = my.konglog.post.PostStatus.PUBLISHED
+            """)
+    Optional<Post> findPublishedBySlug(String slug);
 }
