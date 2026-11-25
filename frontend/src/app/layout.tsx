@@ -20,7 +20,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ko" className="h-full antialiased">
-      <body className="flex min-h-full flex-col bg-bg font-sans text-body text-ink">
+      {/* wrap-break-word: 좁은 화면에서 긴 영어 단어나 주소가 페이지 밖으로 넘치지 않게 그 안에서 줄을 바꾼다. */}
+      <body className="flex min-h-full flex-col bg-bg font-sans text-body text-ink wrap-break-word">
         <SiteHeader />
         <main className="mx-auto w-full max-w-wide flex-1 px-4">
           {children}
