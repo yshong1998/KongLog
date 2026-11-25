@@ -35,8 +35,7 @@ public class PostController {
         if (size < 1 || size > MAX_SIZE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "size는 1부터 " + MAX_SIZE + "까지 넣을 수 있다");
         }
-        String tagName = (tag == null || tag.isBlank()) ? null : tag;
-        return postQueryService.getPublishedPosts(tagName, decodeCursor(cursor), size);
+        return postQueryService.getPublishedPosts(tagName(tag), decodeCursor(cursor), size);
     }
 
     /**
@@ -49,6 +48,22 @@ public class PostController {
         return postQueryService
                 .findPublishedPost(slug)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "글을 찾을 수 없다"));
+    }
+
+    /**
+     * 거를 태그 이름. 비어 있으면 거르지 않는다는 뜻으로 null이다.
+     *
+     * <p>줄바꿈이나 null 글자 같은 제어 문자는 태그 이름에 쓸 수 없어서 400이다. null 글자는 DB가 받지 못해
+     * 그대로 넘기면 500이 난다.
+     */
+    private String tagName(String tag) {
+        if (tag == null || tag.isBlank()) {
+            return null;
+        }
+        if (tag.chars().anyMatch(Character::isISOControl)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "tag에 쓸 수 없는 글자가 있다");
+        }
+        return tag;
     }
 
     private PostCursor decodeCursor(String cursor) {

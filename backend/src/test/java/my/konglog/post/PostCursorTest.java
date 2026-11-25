@@ -30,4 +30,12 @@ class PostCursorTest {
     void 이_API가_만들지_않은_값은_읽지_못한다(String encoded) {
         assertThatThrownBy(() -> PostCursor.decode(encoded)).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"+10000-01-01T00:00:00Z", "-0001-12-31T23:59:59Z", "+999999999-12-31T23:59:59Z"})
+    void 발행일이_1년부터_9999년_사이가_아니면_읽지_못한다(String publishedAt) {
+        String encoded = new PostCursor(Instant.parse(publishedAt), 1).encode();
+
+        assertThatThrownBy(() -> PostCursor.decode(encoded)).isInstanceOf(IllegalArgumentException.class);
+    }
 }

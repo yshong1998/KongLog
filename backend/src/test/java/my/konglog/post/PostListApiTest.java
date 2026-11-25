@@ -10,13 +10,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.jayway.jsonpath.JsonPath;
 import jakarta.persistence.EntityManager;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import my.konglog.tag.Tag;
 import my.konglog.tag.TagRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
@@ -214,6 +218,21 @@ class PostListApiTest {
         perform(get("/api/posts").param("cursor", "not-a-cursor")).andExpect(status().isBadRequest());
     }
 
+    @ParameterizedTest
+    // DB에 넣을 수 없을 만큼 먼 미래와 먼 과거. 이슈 #36에서 500이 났던 값이다.
+    @ValueSource(strings = {"+999999999-12-31T23:59:59Z,1", "-999999999-01-01T00:00:00Z,1"})
+    void 커서의_발행일이_DB에_넣을_수_없는_날짜면_400이다(String raw) throws Exception {
+        perform(get("/api/posts").param("cursor", base64(raw))).andExpect(status().isBadRequest());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"0001-01-01T00:00:00Z,1", "9999-12-31T23:59:59.999999Z,1"})
+    void 커서의_발행일이_DB에_넣을_수_있는_날짜면_오류가_아니다(String raw) throws Exception {
+        published("post", BASE);
+
+        perform(get("/api/posts").param("cursor", base64(raw))).andExpect(status().isOk());
+    }
+
     @Test
     void 태그로_거르면_그_태그가_붙은_게시_글만_내려주고_전체_글_수도_그_기준이다() throws Exception {
         Tag spring = tag("Spring");
@@ -300,6 +319,17 @@ class PostListApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.posts", hasSize(2)))
                 .andExpect(jsonPath("$.totalCount").value(2));
+    }
+
+    @ParameterizedTest
+    // 차례로: null 글자, 줄바꿈, 탭
+    @ValueSource(strings = {"a\u0000b", "a\nb", "a\tb"})
+    void 태그_이름에_쓸_수_없는_글자가_있으면_400이다(String tag) throws Exception {
+        perform(get("/api/posts").param("tag", tag)).andExpect(status().isBadRequest());
+    }
+
+    private static String base64(String raw) {
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(raw.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
