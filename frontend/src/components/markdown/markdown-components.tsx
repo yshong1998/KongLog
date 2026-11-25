@@ -35,7 +35,10 @@ function Anchor({ href, children, ...props }: ComponentProps<"a">) {
   );
 }
 
-/** 소제목. 누르면 그 위치의 링크가 주소에 반영된다. */
+/**
+ * 소제목. 누르면 그 위치의 링크가 주소에 반영된다.
+ * 글자 높이가 44px보다 낮아서, 보이는 모양과 줄 간격은 두고 누르는 영역만 위아래로 넓힌다.
+ */
 function headingLink(Tag: "h2" | "h3", className: string) {
   return function Heading({ id, children }: ComponentProps<"h2">) {
     return (
@@ -43,7 +46,10 @@ function headingLink(Tag: "h2" | "h3", className: string) {
         {id === undefined ? (
           children
         ) : (
-          <a href={`#${id}`} className="hover:underline">
+          <a
+            href={`#${id}`}
+            className="relative inline-block hover:underline after:absolute after:inset-x-0 after:-inset-y-2"
+          >
             {children}
           </a>
         )}
