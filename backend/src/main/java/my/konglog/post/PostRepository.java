@@ -22,7 +22,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
      * <p>태그와 커서는 값이 있을 때만 조건이 된다. "(값 is null or 조건)"은 값이 없으면 앞쪽이 참이라 통과한다.
      * 발행일에만 cast가 붙은 이유: 값이 없는 시각을 그대로 넘기면 PostgreSQL이 타입을 알 수 없다는 오류를 낸다.
      *
-     * @param tagName 이 이름의 태그가 붙은 글만 읽는다. null이면 거르지 않는다
+     * @param tagName 이 이름의 태그가 붙은 글만 읽는다. 대소문자는 구분하지 않는다. null이면 거르지 않는다
      * @param afterPublishedAt 이 발행일의 글 다음부터 읽는다. null이면 처음부터 읽는다
      * @param afterId 발행일이 같은 글 중에서는 이 id 다음부터 읽는다. afterPublishedAt과 함께 넣는다
      * @param limit 읽을 최대 개수
@@ -31,7 +31,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             select new my.konglog.post.PostSummaryRow(p.id, p.title, p.slug, p.summary, p.publishedAt)
             from Post p
             where p.status = my.konglog.post.PostStatus.PUBLISHED
-              and (:tagName is null or exists (select 1 from p.tags t where t.name = :tagName))
+              and (:tagName is null or exists (select 1 from p.tags t where lower(t.name) = lower(cast(:tagName as String))))
               and (cast(:afterPublishedAt as Instant) is null
                    or p.publishedAt < :afterPublishedAt
                    or (p.publishedAt = :afterPublishedAt and p.id < :afterId))
@@ -47,7 +47,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("""
             select count(p) from Post p
             where p.status = my.konglog.post.PostStatus.PUBLISHED
-              and (:tagName is null or exists (select 1 from p.tags t where t.name = :tagName))
+              and (:tagName is null or exists (select 1 from p.tags t where lower(t.name) = lower(cast(:tagName as String))))
             """)
     long countPublished(String tagName);
 

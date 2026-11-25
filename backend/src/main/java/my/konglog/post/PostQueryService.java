@@ -24,7 +24,7 @@ public class PostQueryService {
     /**
      * 게시 글 목록을 최신순으로 읽는다.
      *
-     * @param tagName 이 이름의 태그가 붙은 글만 읽는다. null이면 거르지 않는다
+     * @param tagName 이 이름의 태그가 붙은 글만 읽는다. 대소문자는 구분하지 않는다. null이면 거르지 않는다
      * @param after 이 글 다음부터 읽는다. null이면 처음부터 읽는다
      * @param size 읽을 개수
      */
