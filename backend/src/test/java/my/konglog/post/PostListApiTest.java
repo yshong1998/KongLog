@@ -288,6 +288,29 @@ class PostListApiTest {
                 .andExpect(jsonPath("$.nextCursor", nullValue()));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"spring", "SPRING", "sPrInG"})
+    void 태그로_거를_때_대소문자를_구분하지_않고_응답의_태그는_저장된_표기다(String tag) throws Exception {
+        published("spring-post", BASE, tag("Spring"));
+        published("other", BASE.plusSeconds(DAY), tag("React"));
+
+        perform(get("/api/posts").param("tag", tag))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.posts[*].slug", contains("spring-post")))
+                .andExpect(jsonPath("$.posts[0].tags", contains("Spring")))
+                .andExpect(jsonPath("$.totalCount").value(1));
+    }
+
+    @Test
+    void 태그로_거를_때_띄어쓰기_유무는_구분한다() throws Exception {
+        published("spring-boot", BASE, tag("Spring Boot"));
+
+        perform(get("/api/posts").param("tag", "springboot"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.posts", hasSize(0)))
+                .andExpect(jsonPath("$.totalCount").value(0));
+    }
+
     @Test
     void 띄어쓰기가_있는_태그_이름으로도_거른다() throws Exception {
         published("actions", BASE, tag("GitHub Actions"));
