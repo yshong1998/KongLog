@@ -42,10 +42,16 @@ export async function generateMetadata({
   params,
 }: PageProps<"/posts/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const loaded = await loadPost(slug).catch(() => null);
-  return loaded === null
-    ? {}
-    : { title: loaded.post.title, description: loaded.post.summary };
+  // 불러오지 못하면 undefined다. 제목 없이 두고, 화면은 오류 화면이 맡는다.
+  const loaded = await loadPost(slug).catch(() => undefined);
+  if (loaded === undefined) {
+    return {};
+  }
+  // 없는 글과 초안은 "페이지를 찾을 수 없음" 화면과 같은 제목을 쓴다.
+  if (loaded === null) {
+    return { title: "페이지를 찾을 수 없음" };
+  }
+  return { title: loaded.post.title, description: loaded.post.summary };
 }
 
 /** 글 상세. 글 머리, 목차, 본문, 글 끝 동작 순서다. */
@@ -70,16 +76,9 @@ async function PostArticle({
   params,
 }: Pick<PageProps<"/posts/[slug]">, "params">) {
   const { slug } = await params;
-  // 불러오지 못하면 undefined, 없는 글이면 null이다.
-  const loaded = await loadPost(slug).catch(() => undefined);
+  // 불러오지 못하면 loadPost가 던지고, 오류 화면(app/error.tsx)이 보인다. 없는 글이면 null이다.
+  const loaded = await loadPost(slug);
 
-  if (loaded === undefined) {
-    return (
-      <p className="mx-auto max-w-content text-danger">
-        글을 불러오지 못했어요. 잠시 뒤에 다시 시도해 주세요.
-      </p>
-    );
-  }
   if (loaded === null) {
     notFound();
   }

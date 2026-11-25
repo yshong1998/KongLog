@@ -12,6 +12,13 @@ export const SITE_INTRO =
 /** 저작권 표기에 쓰는 연도. 블로그를 처음 만든 해. */
 export const COPYRIGHT_YEAR = 2026;
 
+/** 소개 화면 맨 위의 이름. 본문은 src/content/about.md에 있다. */
+export const AUTHOR_NAME = "Kong";
+
+/** 소개 화면에서 이름 아래 보이는 한 줄 소개. */
+export const AUTHOR_TAGLINE =
+  "막혔던 문제를 하나씩 풀어 가며 배우는 주니어 개발자예요.";
+
 export const GITHUB_URL = "https://github.com/yshong1998";
 
 export type MenuItem = {

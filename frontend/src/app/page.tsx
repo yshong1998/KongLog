@@ -42,9 +42,13 @@ async function RecentPostsAndTags() {
     getPosts({ size: RECENT_POST_COUNT }),
     getTags(),
   ]);
+  // 글을 불러오지 못하면 오류 화면(app/error.tsx)을 보여 준다. 태그만 실패하면 이 화면 안에 알린다.
+  if (!posts.ok) {
+    throw new Error("최근 글을 불러오지 못했어요");
+  }
 
   // 게시 글이 없으면 태그 모음을 숨긴다. 보여 줄 태그가 없을 때도 숨긴다.
-  const noPosts = posts.ok && posts.data.posts.length === 0;
+  const noPosts = posts.data.posts.length === 0;
   const noTags = tags.ok && tags.data.length === 0;
   const showTags = !noPosts && !noTags;
 
@@ -58,11 +62,7 @@ async function RecentPostsAndTags() {
         <h2 id="recent-title" className="text-h3">
           최근 글
         </h2>
-        {!posts.ok ? (
-          <p className="text-danger">
-            글을 불러오지 못했어요. 잠시 뒤에 다시 시도해 주세요.
-          </p>
-        ) : noPosts ? (
+        {noPosts ? (
           <p className="text-ink-muted">아직 글이 없어요</p>
         ) : (
           <>
