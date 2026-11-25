@@ -13,6 +13,16 @@ import java.util.Base64;
  */
 public record PostCursor(Instant publishedAt, long id) {
 
+    /**
+     * 커서로 받는 발행일의 범위. 1년부터 9999년까지다.
+     *
+     * <p>이 범위 밖의 날짜는 DB에 보낼 때 숫자가 넘쳐 오류가 난다. 이 API가 이런 날짜를 내려줄 일은 없으니,
+     * 범위 밖이면 이 API가 만든 값이 아니라고 본다.
+     */
+    private static final Instant MIN_PUBLISHED_AT = Instant.parse("0001-01-01T00:00:00Z");
+
+    private static final Instant MAX_PUBLISHED_AT = Instant.parse("9999-12-31T23:59:59.999999999Z");
+
     public static PostCursor of(Post post) {
         return new PostCursor(post.getPublishedAt(), post.getId());
     }
@@ -37,6 +47,9 @@ public record PostCursor(Instant publishedAt, long id) {
                 throw new IllegalArgumentException("커서 형식이 올바르지 않다: " + encoded);
             }
             Instant publishedAt = Instant.parse(raw.substring(0, comma));
+            if (publishedAt.isBefore(MIN_PUBLISHED_AT) || publishedAt.isAfter(MAX_PUBLISHED_AT)) {
+                throw new IllegalArgumentException("커서의 발행일이 범위 밖이다: " + encoded);
+            }
             long id = Long.parseLong(raw.substring(comma + 1));
             return new PostCursor(publishedAt, id);
         } catch (DateTimeParseException | NumberFormatException e) {
