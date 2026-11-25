@@ -42,3 +42,9 @@ tasks.named('test') {
     // 테스트는 전용 스키마를 쓴다. 설정은 src/test/resources/application-test.yaml에 있다.
     systemProperty 'spring.profiles.active', 'test'
 }
+
+tasks.named('bootRun') {
+    // 로컬에서 띄울 때는 프론트 개발 서버(http://localhost:3000)가 브라우저에서 API를 부를 수 있게 한다.
+    // 환경 변수 CORS_ALLOWED_ORIGINS가 있으면 그 값을 쓴다. 배포 환경은 bootRun을 쓰지 않으니 이 기본값이 없다.
+    systemProperty 'konglog.cors.allowed-origins', System.getenv('CORS_ALLOWED_ORIGINS') ?: 'http://localhost:3000'
+}
