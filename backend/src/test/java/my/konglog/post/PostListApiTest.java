@@ -321,6 +321,13 @@ class PostListApiTest {
                 .andExpect(jsonPath("$.totalCount").value(2));
     }
 
+    @ParameterizedTest
+    // 차례로: null 글자, 줄바꿈, 탭
+    @ValueSource(strings = {"a\u0000b", "a\nb", "a\tb"})
+    void 태그_이름에_쓸_수_없는_글자가_있으면_400이다(String tag) throws Exception {
+        perform(get("/api/posts").param("tag", tag)).andExpect(status().isBadRequest());
+    }
+
     private static String base64(String raw) {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(raw.getBytes(StandardCharsets.UTF_8));
     }
