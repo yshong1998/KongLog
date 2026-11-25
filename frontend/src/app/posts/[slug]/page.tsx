@@ -70,16 +70,9 @@ async function PostArticle({
   params,
 }: Pick<PageProps<"/posts/[slug]">, "params">) {
   const { slug } = await params;
-  // 불러오지 못하면 undefined, 없는 글이면 null이다.
-  const loaded = await loadPost(slug).catch(() => undefined);
+  // 불러오지 못하면 loadPost가 던지고, 오류 화면(app/error.tsx)이 보인다. 없는 글이면 null이다.
+  const loaded = await loadPost(slug);
 
-  if (loaded === undefined) {
-    return (
-      <p className="mx-auto max-w-content text-danger">
-        글을 불러오지 못했어요. 잠시 뒤에 다시 시도해 주세요.
-      </p>
-    );
-  }
   if (loaded === null) {
     notFound();
   }

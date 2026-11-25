@@ -52,13 +52,15 @@ async function FilteredPosts({
 }: Pick<PageProps<"/posts">, "searchParams">) {
   const tag = readTag((await searchParams).tag);
   const [posts, tags] = await Promise.all([getPosts({ tag }), getTags()]);
+  // 글을 불러오지 못하면 오류 화면(app/error.tsx)을 보여 준다. 태그만 실패하면 이 화면 안에 알린다.
+  if (!posts.ok) {
+    throw new Error("글 목록을 불러오지 못했어요");
+  }
 
   return (
     <>
       <PageTitle
-        count={
-          posts.ok ? `${tag ?? "전체"} ${posts.data.totalCount}개` : undefined
-        }
+        count={`${tag ?? "전체"} ${posts.data.totalCount}개`}
       />
 
       {tags.ok ? (
@@ -72,11 +74,7 @@ async function FilteredPosts({
         </p>
       )}
 
-      {!posts.ok ? (
-        <p className="text-danger">
-          글을 불러오지 못했어요. 잠시 뒤에 다시 시도해 주세요.
-        </p>
-      ) : posts.data.posts.length > 0 ? (
+      {posts.data.posts.length > 0 ? (
         // 태그가 바뀌면 "더 보기"로 받아 둔 글을 버리고 새 목록으로 시작하도록 key를 준다.
         <PostCardList
           key={tag ?? ""}
