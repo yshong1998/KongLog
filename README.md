@@ -37,7 +37,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-http://localhost:3000 을 열었을 때 "백엔드 연결" 칸에 "연결됐어요"가 보이면 세 가지가 모두 이어진 것입니다.
+http://localhost:3000 을 열었을 때 홈에 최근 글과 태그가 보이면 세 가지가 모두 이어진 것입니다. 글이 보이려면 테스트용 글을 먼저 넣어야 합니다. 넣는 방법은 [backend/README.md](backend/README.md)의 "테스트용 글 넣기"에 있습니다.
 
 DB를 내릴 때는 `docker compose -f infra/local/compose.yaml down`을 씁니다. 데이터까지 지우려면 끝에 `-v`를 붙입니다.
 
