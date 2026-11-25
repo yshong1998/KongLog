@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 import { CopyCodeButton } from "./copy-code-button";
 
 type CodeBlockProps = ComponentProps<"pre"> & {
-  /** Shiki가 붙인 언어 이름. 언어를 적지 않은 코드 블록은 "text"다. */
+  /** Shiki가 붙인 언어 이름. 언어를 적지 않았거나 모르는 언어면 "plaintext"다. */
   "data-language"?: string;
 };
 
@@ -18,7 +18,7 @@ export function CodeBlock({
   children,
   ...props
 }: CodeBlockProps) {
-  const label = language && language !== "text" ? language : undefined;
+  const label = language && language !== "plaintext" ? language : undefined;
 
   return (
     <figure className="overflow-hidden rounded-md bg-code-bg text-code-ink">

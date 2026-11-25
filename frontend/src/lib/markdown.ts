@@ -40,8 +40,9 @@ const processor = unified()
     // 글에 나오는 언어만 그때그때 불러온다.
     lazy: true,
     // 언어를 적지 않았거나 Shiki가 모르는 언어면 색 없이 그대로 보여 준다.
-    defaultLanguage: "text",
-    fallbackLanguage: "text",
+    // 글쓴이가 직접 적은 "text"와 구분하려고 "plaintext"로 둔다. 화면에는 언어 이름이 나오지 않는다.
+    defaultLanguage: "plaintext",
+    fallbackLanguage: "plaintext",
     transformers: [keepLanguage],
   });
 
