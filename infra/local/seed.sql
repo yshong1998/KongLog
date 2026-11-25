@@ -293,11 +293,11 @@ values
     ('draft-kubernetes-notes', 'Kubernetes'),
     ('draft-kubernetes-notes', 'Docker');
 
--- 태그: 이미 있는 이름은 그대로 둔다.
+-- 태그: 이미 있는 이름은 그대로 둔다. 대소문자만 다른 이름도 이미 있는 것으로 보고, 표기는 있던 것을 둔다.
 insert into tag (name)
 select distinct tag_name
 from seed_post_tag
-on conflict (name) do nothing;
+on conflict ((lower(name))) do nothing;
 
 -- 글: 슬러그가 같으면 이 파일의 내용으로 덮어쓴다.
 -- 시각은 now()가 아니라 정해 둔 값을 써서 언제 실행해도 같다.
@@ -344,7 +344,7 @@ insert into post_tag (post_id, tag_id)
 select p.id, t.id
 from seed_post_tag st
 join post p on p.slug = st.slug
-join tag t on t.name = st.tag_name;
+join tag t on lower(t.name) = lower(st.tag_name);
 
 commit;
 
