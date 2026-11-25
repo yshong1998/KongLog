@@ -119,6 +119,53 @@ export async function getPosts({
   return isPostList(body) ? { ok: true, data: body } : { ok: false };
 }
 
+/** 글 한 편. 글 상세 화면에서 쓴다. */
+export type Post = PostSummary & {
+  /** 마크다운 원문 */
+  content: string;
+  /** 게시한 뒤 본문을 고친 시각. 고친 적이 없으면 null이다. 항상 UTC로 온다. */
+  editedAt: string | null;
+};
+
+/** 글 한 편을 받은 결과. 없는 글과 초안은 notFound로 구분한다. */
+export type PostResult = ApiResult<Post> | { ok: false; notFound: true };
+
+function isPost(value: unknown): value is Post {
+  if (!isRecord(value) || !isPostSummary(value)) {
+    return false;
+  }
+  const rest: Record<string, unknown> = value;
+  return (
+    typeof rest.content === "string" &&
+    (rest.editedAt === null ||
+      (typeof rest.editedAt === "string" &&
+        !Number.isNaN(Date.parse(rest.editedAt))))
+  );
+}
+
+/**
+ * 게시 글 한 편을 슬러그로 받는다.
+ * 없는 글과 초안은 백엔드가 똑같이 404로 준다. 슬러그 모양이 잘못돼 400이 와도 없는 글로 본다.
+ */
+export async function getPost(slug: string): Promise<PostResult> {
+  try {
+    const response = await fetch(
+      apiUrl(`/api/posts/${encodeURIComponent(slug)}`),
+      { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) },
+    );
+    if (response.status === 404 || response.status === 400) {
+      return { ok: false, notFound: true };
+    }
+    if (!response.ok) {
+      return { ok: false };
+    }
+    const body: unknown = await response.json();
+    return isPost(body) ? { ok: true, data: body } : { ok: false };
+  } catch {
+    return { ok: false };
+  }
+}
+
 /** 게시 글이 있는 태그를 글이 많은 순으로 받는다. */
 export async function getTags(): Promise<ApiResult<Tag[]>> {
   const body = await getJson("/api/tags");

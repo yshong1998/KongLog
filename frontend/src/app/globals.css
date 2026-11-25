@@ -23,6 +23,31 @@
   --danger: #b3401a;
   --code-bg: #20281d;
   --code-ink: #e8eedf;
+
+  /*
+   * 코드 하이라이팅 색. 코드 블록은 두 모드 모두 어두운 바탕이라 값이 하나다.
+   * 모두 code-bg 위에서 대비 6:1 이상이다.
+   */
+  --syntax-comment: #9aa88e;
+  --syntax-keyword: #b3e57a;
+  --syntax-string: #f3d98b;
+  --syntax-constant: #f5ab84;
+  --syntax-function: #8fd6c9;
+  --syntax-parameter: #e3c7a3;
+  --syntax-expression: #c9e7a3;
+  --syntax-link: #9fcfee;
+
+  /* Shiki가 코드에 붙이는 변수 이름을 위 색에 연결한다. */
+  --shiki-foreground: var(--code-ink);
+  --shiki-background: var(--code-bg);
+  --shiki-token-comment: var(--syntax-comment);
+  --shiki-token-keyword: var(--syntax-keyword);
+  --shiki-token-string: var(--syntax-string);
+  --shiki-token-constant: var(--syntax-constant);
+  --shiki-token-function: var(--syntax-function);
+  --shiki-token-parameter: var(--syntax-parameter);
+  --shiki-token-string-expression: var(--syntax-expression);
+  --shiki-token-link: var(--syntax-link);
 }
 
 [data-theme="dark"] {
