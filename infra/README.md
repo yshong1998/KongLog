@@ -53,6 +53,34 @@ http://localhost:8080/api/ping 이 답하면 정상입니다.
 
 `-Xmx`는 Java가 객체를 담는 공간(힙)의 상한입니다. 컨테이너가 쓰는 전체 메모리는 이보다 큽니다. 서버에서 쓸 값은 서버용 Compose를 만들 때 정합니다.
 
+### 프론트엔드
+
+만들기:
+
+```bash
+docker build -f infra/docker/frontend.Dockerfile -t konglog-frontend:local frontend
+```
+
+- 백엔드가 떠 있지 않아도 만들어집니다. 글 데이터는 이미지를 만들 때가 아니라 화면을 요청받을 때 가져옵니다.
+- 최종 이미지에는 빌드 결과와 실행에 필요한 패키지만 들어갑니다. 소스 코드와 `.env` 파일은 들어가지 않습니다.
+
+띄우기(백엔드가 8080 포트에 떠 있어야 글이 보입니다):
+
+```bash
+docker run --rm -p 3000:3000 \
+  -e API_BASE_URL=http://host.docker.internal:8080 \
+  konglog-frontend:local
+```
+
+http://localhost:3000 에서 홈에 최근 글과 태그가 보이면 정상입니다.
+
+설정은 띄울 때 환경 변수로 넣습니다.
+
+| 환경 변수 | 설명 |
+| --- | --- |
+| `API_BASE_URL` | Next.js 서버가 백엔드를 부를 때 쓰는 주소. 이미지에 들어 있지 않아서 띄울 때 꼭 넣습니다 |
+| `NODE_OPTIONS` | Node.js에 넘길 옵션. 메모리 상한을 넣을 때 씁니다. 예: `-e NODE_OPTIONS="--max-old-space-size=256"` |
+
 ## 서버를 처음부터 다시 만들 때
 
 `setup/`의 문서를 번호 순서대로 따라 합니다. 콘솔 화면에서 손으로 한 일도 여기에 적습니다.
