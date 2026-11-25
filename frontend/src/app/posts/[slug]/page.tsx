@@ -42,10 +42,16 @@ export async function generateMetadata({
   params,
 }: PageProps<"/posts/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const loaded = await loadPost(slug).catch(() => null);
-  return loaded === null
-    ? {}
-    : { title: loaded.post.title, description: loaded.post.summary };
+  // 불러오지 못하면 undefined다. 제목 없이 두고, 화면은 오류 화면이 맡는다.
+  const loaded = await loadPost(slug).catch(() => undefined);
+  if (loaded === undefined) {
+    return {};
+  }
+  // 없는 글과 초안은 "페이지를 찾을 수 없음" 화면과 같은 제목을 쓴다.
+  if (loaded === null) {
+    return { title: "페이지를 찾을 수 없음" };
+  }
+  return { title: loaded.post.title, description: loaded.post.summary };
 }
 
 /** 글 상세. 글 머리, 목차, 본문, 글 끝 동작 순서다. */
