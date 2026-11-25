@@ -59,3 +59,4 @@ docker compose -f infra/local/compose.yaml exec -T db psql -U konglog -d konglog
 | `DB_URL` | `jdbc:postgresql://localhost:5432/konglog` | DB 주소 |
 | `DB_USERNAME` | `konglog` | DB 사용자 |
 | `DB_PASSWORD` | `konglog` | DB 비밀번호. 기본값은 로컬 전용입니다 |
+| `CORS_ALLOWED_ORIGINS` | 없음 (`./gradlew bootRun`에서는 `http://localhost:3000`) | 브라우저에서 API를 직접 부를 수 있는 주소. 쉼표로 여러 개를 넣습니다. 비어 있으면 어떤 주소도 허용하지 않습니다 |
