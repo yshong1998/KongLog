@@ -23,8 +23,8 @@ public record PostCursor(Instant publishedAt, long id) {
 
     private static final Instant MAX_PUBLISHED_AT = Instant.parse("9999-12-31T23:59:59.999999999Z");
 
-    public static PostCursor of(Post post) {
-        return new PostCursor(post.getPublishedAt(), post.getId());
+    public static PostCursor of(PostSummaryRow row) {
+        return new PostCursor(row.publishedAt(), row.id());
     }
 
     /** API로 주고받는 글자로 바꾼다. 호출하는 쪽은 뜻을 몰라도 되고, 받은 그대로 돌려주면 된다. */
