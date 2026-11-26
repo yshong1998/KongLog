@@ -8,6 +8,7 @@
 | --- | --- |
 | `local/` | 로컬 개발용 DB. 실행 방법은 루트 [README.md](../README.md)의 "로컬에서 실행"에 있습니다 |
 | `docker/` | Docker 이미지를 만드는 파일 |
+| `server/` | 서버용 구성. Caddy, Next.js, Spring Boot, PostgreSQL을 함께 띄웁니다 |
 | `setup/` | 서버를 처음 만들 때 한 일을 순서대로 적은 문서 |
 
 ## Docker 이미지
@@ -80,6 +81,74 @@ http://localhost:3000 에서 홈에 최근 글과 태그가 보이면 정상입�
 | --- | --- |
 | `API_BASE_URL` | Next.js 서버가 백엔드를 부를 때 쓰는 주소. 이미지에 들어 있지 않아서 띄울 때 꼭 넣습니다 |
 | `NODE_OPTIONS` | Node.js에 넘길 옵션. 메모리 상한을 넣을 때 씁니다. 예: `-e NODE_OPTIONS="--max-old-space-size=256"` |
+
+## 서버용 구성
+
+`server/compose.yaml`은 서버에서 쓰는 구성입니다. 네 가지를 명령 하나로 함께 띄웁니다.
+
+| 이름 | 하는 일 |
+| --- | --- |
+| `caddy` | 밖에서 들어오는 요청을 받아 나눠 줍니다. 주소가 `/api`로 시작하면 백엔드로, 나머지는 프론트엔드로 보냅니다. HTTPS 인증서도 받습니다 |
+| `frontend` | 화면 (Next.js) |
+| `backend` | API 서버 (Spring Boot) |
+| `db` | PostgreSQL 18 |
+
+- 밖에 여는 포트는 Caddy의 80과 443뿐입니다. DB와 앱은 컨테이너끼리만 통합니다.
+- DB 데이터와 인증서는 볼륨(컨테이너 밖의 저장 공간)에 둡니다. 컨테이너를 다시 만들어도 남습니다.
+- 테이블은 백엔드가 뜰 때 Flyway가 만듭니다. `local/seed.sql`은 로컬 전용이라 여기서는 넣지 않습니다.
+
+### 내 컴퓨터에서 띄워 보기
+
+서버 없이 같은 구성을 확인할 때 씁니다. 로컬 개발용 DB(`local/compose.yaml`)가 떠 있어도 함께 띄울 수 있습니다.
+
+1. 위의 "Docker 이미지"대로 백엔드와 프론트엔드 이미지를 만듭니다.
+2. 환경 변수 파일을 만들고 `POSTGRES_USER`와 `POSTGRES_PASSWORD`를 채웁니다.
+   ```bash
+   cp infra/server/.env.example infra/server/.env
+   ```
+3. 띄웁니다.
+   ```bash
+   docker compose -f infra/server/compose.yaml up -d
+   ```
+4. 확인합니다. 내 컴퓨터에서는 Caddy가 직접 만든 인증서를 써서 `-k`(인증서 검사 건너뛰기)를 붙입니다.
+   ```bash
+   curl -k https://localhost/api/ping
+   ```
+   브라우저에서는 https://localhost 를 엽니다. 인증서 경고가 나오면 넘어갑니다. 처음에는 글이 없습니다.
+
+내릴 때는 `docker compose -f infra/server/compose.yaml down`을 씁니다. 끝에 `-v`를 붙이면 DB 데이터와 인증서까지 지워집니다.
+
+### 설정값
+
+`server/.env`에 넣습니다. 이 파일은 저장소에 올리지 않습니다. 이름만 적힌 예시는 `server/.env.example`에 있습니다.
+
+| 환경 변수 | 설명 |
+| --- | --- |
+| `SITE_DOMAIN` | 블로그 주소. 내 컴퓨터에서는 `localhost`, 서버에서는 `konglog.my` |
+| `FRONTEND_IMAGE`, `BACKEND_IMAGE` | 띄울 이미지 이름 |
+| `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | DB 이름과 계정. DB를 처음 띄울 때 이 값으로 만들어집니다. 로컬 개발용 값(`konglog`)을 서버에서 쓰지 않습니다 |
+
+`CORS_ALLOWED_ORIGINS`는 넣지 않습니다. 화면과 API가 같은 도메인이라 필요 없습니다.
+
+### 메모리 상한
+
+2GB 서버에 네 가지를 올리므로 컨테이너마다 쓸 수 있는 메모리에 상한(`mem_limit`)을 두었습니다. 상한을 넘은 컨테이너는 멈췄다가 다시 뜹니다. 하나가 메모리를 다 써서 서버 전체가 멈추는 일을 막습니다.
+
+| 이름 | 상한 | 안쪽 설정 | 요청을 보낸 뒤 잰 값 |
+| --- | --- | --- | --- |
+| `backend` | 640MB | 힙 256MB, 메타스페이스 128MB, 코드 캐시 64MB | 358MiB |
+| `frontend` | 384MB | Node.js 힙 256MB | 141MiB |
+| `db` | 256MB | `shared_buffers` 96MB, 접속 30개까지 | 45MiB |
+| `caddy` | 128MB | 없음 | 29MiB |
+| 합 | 1,408MB | | 573MiB |
+
+정한 이유입니다.
+
+- 서버의 메모리는 1.9GB이고, 아무것도 띄우지 않았을 때 운영체제가 약 380MB를 씁니다. 상한의 합(1,408MB)을 더해도 1.9GB를 넘지 않습니다.
+- Java는 힙(객체를 담는 공간)만 막으면 전체 사용량이 그보다 커집니다. 힙 상한을 256MB로만 줬을 때 컨테이너는 410MiB를 썼습니다. 그래서 힙 밖의 큰 두 곳(메타스페이스, 코드 캐시)에도 상한을 두고, 컨테이너 상한은 세 값의 합(448MB)에 스레드 등이 쓸 여유를 더해 640MB로 잡았습니다.
+- PostgreSQL의 `shared_buffers`(데이터를 메모리에 올려 두는 공간)는 기본값 128MB에서 96MB로 낮췄습니다. 글이 수백 개인 블로그에는 충분합니다.
+
+잰 값은 내 컴퓨터(CPU 10개)에서 테스트용 글 24개를 넣고 잰 것입니다. 서버(CPU 2개)에서는 다시 잽니다.
 
 ## 서버를 처음부터 다시 만들 때
 
