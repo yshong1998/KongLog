@@ -189,7 +189,8 @@ curl -skI https://localhost/api/ping | grep -i x-robots-tag
 
 정한 이유입니다.
 
-- 서버의 메모리는 1.9GB이고, 아무것도 띄우지 않았을 때 운영체제가 약 380MB를 씁니다. 상한의 합(1,408MB)을 더해도 1.9GB를 넘지 않습니다.
+- 서버의 메모리는 1.9GB이고, Docker까지 설치한 서버가 아무것도 띄우지 않았을 때 432MB를 씁니다(2026-11-26에 서버에서 잰 값). 상한의 합(1,408MB)을 더하면 1,840MB로 1.9GB를 넘지 않습니다.
+- 여유가 크지 않아서 서버에 스왑(메모리가 모자랄 때 디스크를 대신 쓰는 것) 2GB를 켜 두었습니다. 켜는 방법은 [Lightsail 서버](setup/02-lightsail-server.md)에 있습니다.
 - Java는 힙(객체를 담는 공간)만 막으면 전체 사용량이 그보다 커집니다. 힙 상한을 256MB로만 줬을 때 컨테이너는 410MiB를 썼습니다. 그래서 힙 밖의 큰 두 곳(메타스페이스, 코드 캐시)에도 상한을 두고, 컨테이너 상한은 세 값의 합(448MB)에 스레드 등이 쓸 여유를 더해 640MB로 잡았습니다.
 - PostgreSQL의 `shared_buffers`(데이터를 메모리에 올려 두는 공간)는 기본값 128MB에서 96MB로 낮췄습니다. 글이 수백 개인 블로그에는 충분합니다.
 
@@ -200,6 +201,7 @@ curl -skI https://localhost/api/ping | grep -i x-robots-tag
 `setup/`의 문서를 번호 순서대로 따라 합니다. 콘솔 화면에서 손으로 한 일도 여기에 적습니다.
 
 1. [AWS 계정과 도메인](setup/01-aws-account-and-domain.md)
+2. [Lightsail 서버](setup/02-lightsail-server.md): 서버 만들기, 고정 IP, 방화벽, 스왑, Docker
 
 ## 비밀 값
 
