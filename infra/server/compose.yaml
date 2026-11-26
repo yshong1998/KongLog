@@ -25,6 +25,8 @@ services:
     environment:
       # Caddyfile이 읽는다. 내 컴퓨터에서는 localhost, 서버에서는 konglog.my.
       SITE_DOMAIN: ${SITE_DOMAIN:?SITE_DOMAIN을 .env에 넣는다}
+      # 검색엔진 수집 금지 표시를 붙일지. .env에 없거나 비어 있으면 true(막음)다. false일 때만 푼다.
+      BLOCK_SEARCH_ENGINES: ${BLOCK_SEARCH_ENGINES:-true}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       # 발급받은 인증서를 둔다. 지워지면 다시 발급받아야 하고, 발급 횟수에는 제한이 있다.
