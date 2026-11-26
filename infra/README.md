@@ -82,6 +82,28 @@ http://localhost:3000 에서 홈에 최근 글과 태그가 보이면 정상입�
 | `API_BASE_URL` | Next.js 서버가 백엔드를 부를 때 쓰는 주소. 이미지에 들어 있지 않아서 띄울 때 꼭 넣습니다 |
 | `NODE_OPTIONS` | Node.js에 넘길 옵션. 메모리 상한을 넣을 때 씁니다. 예: `-e NODE_OPTIONS="--max-old-space-size=256"` |
 
+### 서버에서 쓸 이미지
+
+서버에서 쓸 이미지는 내 컴퓨터가 아니라 GitHub Actions가 만듭니다. 설정은 [.github/workflows/images.yml](../.github/workflows/images.yml)에 있습니다. 서버에서는 만들지 않습니다. 2GB 서버에서 빌드하면 메모리가 모자랍니다.
+
+| 언제 | 하는 일 |
+| --- | --- |
+| 풀 리퀘스트를 올렸을 때 | 두 이미지가 만들어지는지만 확인합니다. 보관소에 올리지 않습니다 |
+| `main`에 합쳐졌을 때 | 두 이미지를 만들어 GitHub의 이미지 보관소(ghcr.io)에 올립니다 |
+
+올라가는 이름입니다.
+
+```
+ghcr.io/yshong1998/konglog-frontend:<커밋 번호>
+ghcr.io/yshong1998/konglog-backend:<커밋 번호>
+```
+
+- 태그(`:` 뒤의 값)는 그 이미지를 만든 커밋의 번호 40자입니다. `latest`는 쓰지 않습니다. 서버에 어느 커밋이 떠 있는지 알 수 있고, 이전 번호를 넣으면 이전 이미지로 돌아갈 수 있습니다.
+- `main`에 합쳐질 때마다 두 이미지가 같은 번호로 함께 올라갑니다. 프론트엔드만 바뀐 커밋에서도 백엔드 이미지가 올라갑니다. 서버에서는 두 이미지에 같은 번호를 쓰면 됩니다.
+- 올라간 이미지는 저장소 첫 화면 오른쪽의 "Packages"에서 봅니다.
+- 이미지는 공개로 둡니다. 공개 저장소의 코드로 만든 결과물만 들어 있고 비밀 값은 들어 있지 않습니다. 공개 이미지는 서버가 로그인 없이 받을 수 있어서, 서버에 둘 비밀 값이 하나 줄어듭니다.
+- 풀 리퀘스트에서 이 검사가 실패하면 이미지를 만드는 데 필요한 파일이 바뀐 것입니다. 실패한 단계의 기록을 보고, Dockerfile을 고쳐야 하면 인프라 세션이 맡습니다.
+
 ## 서버용 구성
 
 `server/compose.yaml`은 서버에서 쓰는 구성입니다. 네 가지를 명령 하나로 함께 띄웁니다.
@@ -126,7 +148,7 @@ http://localhost:3000 에서 홈에 최근 글과 태그가 보이면 정상입�
 | --- | --- |
 | `SITE_DOMAIN` | 블로그 주소. 내 컴퓨터에서는 `localhost`, 서버에서는 `konglog.my` |
 | `BLOCK_SEARCH_ENGINES` | 검색엔진 수집을 막을지. 없거나 `true`면 막고, `false`일 때만 풉니다. 아래 "검색엔진 수집 차단"에 있습니다 |
-| `FRONTEND_IMAGE`, `BACKEND_IMAGE` | 띄울 이미지 이름 |
+| `FRONTEND_IMAGE`, `BACKEND_IMAGE` | 띄울 이미지 이름. 내 컴퓨터에서는 직접 만든 이름(`konglog-frontend:local`), 서버에서는 위 "서버에서 쓸 이미지"의 이름과 커밋 번호 |
 | `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | DB 이름과 계정. DB를 처음 띄울 때 이 값으로 만들어집니다. 로컬 개발용 값(`konglog`)을 서버에서 쓰지 않습니다 |
 
 `CORS_ALLOWED_ORIGINS`는 넣지 않습니다. 화면과 API가 같은 도메인이라 필요 없습니다.
