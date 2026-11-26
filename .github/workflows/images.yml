@@ -1,0 +1,71 @@
+# 서버에서 쓸 Docker 이미지(프론트엔드, 백엔드)를 만든다. 서버에서는 빌드하지 않고 여기서 만든 것을 받아 띄운다.
+# - 풀 리퀘스트: 이미지가 만들어지는지만 확인한다. 보관소에 올리지 않는다.
+# - main에 합쳐졌을 때: 만들어서 GitHub의 이미지 보관소(ghcr.io)에 올린다.
+# 올라가는 이름은 아래 둘이고, 태그는 그 이미지를 만든 커밋의 번호다. latest는 쓰지 않는다.
+#   ghcr.io/yshong1998/konglog-frontend:<커밋 번호>
+#   ghcr.io/yshong1998/konglog-backend:<커밋 번호>
+# 서버에 올리는 일은 여기서 하지 않는다. 방법은 infra/README.md에 있다.
+name: Images
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      # 보관소에 올릴 때 필요하다. 다른 사람의 저장소(포크)에서 온 풀 리퀘스트에는 GitHub가 이 권한을 주지 않는다.
+      packages: write
+    strategy:
+      # 한쪽이 실패해도 다른 쪽은 끝까지 만들어 본다.
+      fail-fast: false
+      matrix:
+        include:
+          - name: frontend
+            title: 프론트엔드
+          - name: backend
+            title: 백엔드
+    env:
+      IMAGE: ghcr.io/yshong1998/konglog-${{ matrix.name }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: docker/setup-buildx-action@v4
+
+      # 풀 리퀘스트에서는 올리지 않으므로 로그인도 하지 않는다.
+      # GITHUB_TOKEN은 GitHub가 실행할 때마다 새로 만들어 주는 값이라 따로 등록하지 않는다.
+      - name: 이미지 보관소 로그인
+        if: github.event_name == 'push'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: ${{ matrix.title }} 이미지 만들기
+        uses: docker/build-push-action@v7
+        with:
+          # infra/README.md의 "Docker 이미지"에 있는 명령과 같다. 대상 폴더는 frontend 또는 backend다.
+          context: ${{ matrix.name }}
+          file: infra/docker/${{ matrix.name }}.Dockerfile
+          # 서버(Lightsail)의 CPU 종류에 맞춘다.
+          platforms: linux/amd64
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ env.IMAGE }}:${{ github.sha }}
+          # 이미지가 어느 저장소의 어느 커밋에서 나왔는지 적어 둔다. 보관소 화면에서 저장소와 연결된다.
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          # 바뀌지 않은 단계는 지난 빌드의 결과를 다시 쓴다.
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}
+          # 출처 증명 파일을 함께 올리지 않는다. 올리면 보관소에 태그 없는 항목이 하나씩 더 생긴다.
+          provenance: false
