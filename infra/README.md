@@ -125,10 +125,55 @@ http://localhost:3000 에서 홈에 최근 글과 태그가 보이면 정상입�
 | 환경 변수 | 설명 |
 | --- | --- |
 | `SITE_DOMAIN` | 블로그 주소. 내 컴퓨터에서는 `localhost`, 서버에서는 `konglog.my` |
+| `BLOCK_SEARCH_ENGINES` | 검색엔진 수집을 막을지. 없거나 `true`면 막고, `false`일 때만 풉니다. 아래 "검색엔진 수집 차단"에 있습니다 |
 | `FRONTEND_IMAGE`, `BACKEND_IMAGE` | 띄울 이미지 이름 |
 | `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | DB 이름과 계정. DB를 처음 띄울 때 이 값으로 만들어집니다. 로컬 개발용 값(`konglog`)을 서버에서 쓰지 않습니다 |
 
 `CORS_ALLOWED_ORIGINS`는 넣지 않습니다. 화면과 API가 같은 도메인이라 필요 없습니다.
+
+### 검색엔진 수집 차단
+
+블로그를 공개하기 전(3단계 전)에는 검색엔진이 수집하지 못하게 막아 둡니다. 서버를 띄우면 주소가 바로 열리는데, 그때는 글이 없고 만드는 중인 화면이라서입니다.
+
+Caddy가 모든 응답에 아래 헤더(응답에 붙는 부가 정보)를 붙입니다. 검색엔진은 이 표시가 있는 주소를 검색 결과에 넣지 않습니다.
+
+```
+X-Robots-Tag: noindex, nofollow
+```
+
+- `noindex`는 "검색 결과에 넣지 말라", `nofollow`는 "이 화면의 링크를 따라가지 말라"는 뜻입니다.
+- 화면과 `/api`에 모두 붙습니다. Caddy가 직접 만드는 오류 응답(앱이 죽었을 때의 502)에도 붙습니다.
+- `http://`를 `https://`로 넘기는 응답에는 붙지 않습니다. 넘어간 뒤의 `https://` 응답에 붙어 있어서 그것으로 충분합니다.
+- 사람이 여는 것은 막지 않습니다. 주소를 아는 사람은 그대로 볼 수 있습니다.
+- `robots.txt`와 사이트맵은 3단계에서 만듭니다. 여기에는 없습니다.
+
+확인:
+
+```bash
+curl -skI https://localhost/ | grep -i x-robots-tag
+curl -skI https://localhost/api/ping | grep -i x-robots-tag
+```
+
+두 명령 모두 `x-robots-tag: noindex, nofollow`가 나오면 막힌 것입니다. 서버에서는 `localhost` 대신 `konglog.my`를 넣고 `-k`를 뺍니다.
+
+#### 푸는 방법
+
+블로그를 공개할 때 한 번 합니다.
+
+1. `server/.env`에서 값을 바꿉니다.
+   ```
+   BLOCK_SEARCH_ENGINES=false
+   ```
+2. Caddy를 다시 만듭니다. 환경 변수는 컨테이너를 만들 때 들어가므로 `restart`로는 반영되지 않습니다. Caddy만 1초쯤 끊기고(내 컴퓨터에서 0.5~1.2초) 나머지 셋은 그대로 떠 있습니다.
+   ```bash
+   docker compose -f infra/server/compose.yaml up -d caddy
+   ```
+3. 위의 확인 명령을 다시 돌려 아무것도 나오지 않는지 봅니다.
+
+다시 막을 때는 값을 `true`로 되돌리고 2번을 반복합니다.
+
+- 값이 정확히 `false`일 때만 풀립니다. 줄이 없거나, 비었거나, `False`처럼 다르게 적혀 있으면 막힌 채로 있습니다. 실수로 풀리는 것보다 실수로 막혀 있는 쪽이 안전해서입니다.
+- 풀어도 검색에 바로 나오지는 않습니다. 검색엔진이 다시 수집하러 올 때까지 시간이 걸립니다.
 
 ### 메모리 상한
 
